@@ -1,0 +1,21 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "main.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "main.py"
+    }
+  ],
+  "env": {
+    "DATABASE_URL": "@database_url",
+    "SECRET_KEY": "@secret_key",
+    "APP_NAME": "@app_name",
+    "DEBUG": "@debug"
+  }
+}
