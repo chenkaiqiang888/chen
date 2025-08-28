@@ -1,0 +1,27 @@
+# Render部署配置
+services:
+  - type: web
+    name: license-authorization-system
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        sync: false  # 需要手动设置PostgreSQL数据库URL
+      - key: SECRET_KEY
+        generateValue: true
+      - key: APP_NAME
+        value: "License Authorization System"
+      - key: DEBUG
+        value: "False"
+      - key: HOST
+        value: "0.0.0.0"
+      - key: PORT
+        value: "8000"
+  - type: pserv
+    name: license-db
+    env: postgresql
+    plan: free
+    ipAllowList: []

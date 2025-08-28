@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>软件秘钥授权系统</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .main-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            margin: 2rem auto;
+            padding: 2rem;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        .header h1 {
+            color: #333;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+        .feature-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: none;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            color: white;
+            font-size: 1.5rem;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 10px;
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        .form-control {
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+        }
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        .result-box {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+            border-left: 4px solid #28a745;
+        }
+        .license-key {
+            font-family: 'Courier New', monospace;
+            background: #e9ecef;
+            padding: 0.5rem;
+            border-radius: 5px;
+            word-break: break-all;
+        }
+        .status-valid {
+            color: #28a745;
+        }
+        .status-invalid {
+            color: #dc3545;
+        }
+        .status-expired {
+            color: #ffc107;
+        }
+        .nav-tabs {
+            border-bottom: 2px solid #e9ecef;
+        }
+        .nav-tabs .nav-link {
+            border: none;
+            border-radius: 10px 10px 0 0;
+            margin-right: 0.5rem;
+            color: #666;
+            font-weight: 600;
+        }
+        .nav-tabs .nav-link.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        .table {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .table thead th {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            font-weight: 600;
+        }
+        .badge {
+            border-radius: 20px;
+            padding: 0.5rem 1rem;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="main-container">
+            <div class="header">
+                <h1><i class="fas fa-key"></i> 软件秘钥授权系统</h1>
+                <p>专业的软件授权管理平台</p>
+            </div>
+
+            <!-- 导航标签 -->
+            <ul class="nav nav-tabs" id="mainTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="generate-tab" data-bs-toggle="tab" data-bs-target="#generate" type="button" role="tab">
+                        <i class="fas fa-plus-circle"></i> 生成授权码
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="verify-tab" data-bs-toggle="tab" data-bs-target="#verify" type="button" role="tab">
+                        <i class="fas fa-check-circle"></i> 验证授权码
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="manage-tab" data-bs-toggle="tab" data-bs-target="#manage" type="button" role="tab">
+                        <i class="fas fa-cogs"></i> 管理授权码
+                    </button>
+                </li>
+            </ul>
+
+            <!-- 标签内容 -->
+            <div class="tab-content" id="mainTabsContent">
+                <!-- 生成授权码 -->
+                <div class="tab-pane fade show active" id="generate" role="tabpanel">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-plus-circle"></i>
+                        </div>
+                        <h3 class="text-center mb-4">生成新授权码</h3>
+                        <form id="generateForm">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="userEmail" class="form-label">用户邮箱</label>
+                                    <input type="email" class="form-control" id="userEmail" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="planType" class="form-label">授权类型</label>
+                                    <select class="form-control" id="planType" required>
+                                        <option value="trial1">1天试用</option>
+                                        <option value="trial3">3天试用</option>
+                                        <option value="30d">30天授权</option>
+                                        <option value="180d">180天授权</option>
+                                        <option value="365d">365天授权</option>
+                                        <option value="lifetime">永久授权</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-magic"></i> 生成授权码
+                                </button>
+                            </div>
+                        </form>
+                        <div id="generateResult" class="result-box" style="display: none;">
+                            <h5><i class="fas fa-check-circle text-success"></i> 授权码生成成功</h5>
+                            <p><strong>授权码:</strong> <span id="generatedKey" class="license-key"></span></p>
+                            <p><strong>授权类型:</strong> <span id="generatedPlan"></span></p>
+                            <p><strong>有效期至:</strong> <span id="generatedEndDate"></span></p>
+                            <p><strong>用户邮箱:</strong> <span id="generatedEmail"></span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 验证授权码 -->
+                <div class="tab-pane fade" id="verify" role="tabpanel">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <h3 class="text-center mb-4">验证授权码</h3>
+                        <form id="verifyForm">
+                            <div class="mb-3">
+                                <label for="licenseKey" class="form-label">授权码</label>
+                                <input type="text" class="form-control" id="licenseKey" placeholder="请输入授权码" required>
+                            </div>
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-search"></i> 验证授权码
+                                </button>
+                            </div>
+                        </form>
+                        <div id="verifyResult" class="result-box" style="display: none;">
+                            <h5 id="verifyStatus"></h5>
+                            <div id="verifyDetails"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 管理授权码 -->
+                <div class="tab-pane fade" id="manage" role="tabpanel">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-cogs"></i>
+                        </div>
+                        <h3 class="text-center mb-4">授权码管理</h3>
+                        <div class="text-center mb-3">
+                            <button class="btn btn-primary" onclick="loadLicenses()">
+                                <i class="fas fa-refresh"></i> 刷新列表
+                            </button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>授权码</th>
+                                        <th>用户邮箱</th>
+                                        <th>授权类型</th>
+                                        <th>状态</th>
+                                        <th>有效期</th>
+                                        <th>创建时间</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="licensesTable">
+                                    <tr>
+                                        <td colspan="6" class="text-center">点击"刷新列表"加载数据</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 生成授权码
+        document.getElementById('generateForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('userEmail').value;
+            const planType = document.getElementById('planType').value;
+            
+            try {
+                const response = await fetch('/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        user_email: email,
+                        plan_type: planType
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    document.getElementById('generatedKey').textContent = result.license_key;
+                    document.getElementById('generatedPlan').textContent = getPlanName(planType);
+                    document.getElementById('generatedEndDate').textContent = result.end_date ? new Date(result.end_date).toLocaleString('zh-CN') : '永久';
+                    document.getElementById('generatedEmail').textContent = result.user_email;
+                    document.getElementById('generateResult').style.display = 'block';
+                } else {
+                    alert('生成失败: ' + result.detail);
+                }
+            } catch (error) {
+                alert('请求失败: ' + error.message);
+            }
+        });
+
+        // 验证授权码
+        document.getElementById('verifyForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const licenseKey = document.getElementById('licenseKey').value;
+            
+            try {
+                const response = await fetch(`/verify/${licenseKey}`);
+                const result = await response.json();
+                
+                const statusElement = document.getElementById('verifyStatus');
+                const detailsElement = document.getElementById('verifyDetails');
+                
+                if (response.ok) {
+                    if (result.status === 'valid') {
+                        statusElement.innerHTML = '<i class="fas fa-check-circle status-valid"></i> 授权码有效';
+                        statusElement.className = 'status-valid';
+                        detailsElement.innerHTML = `
+                            <p><strong>授权类型:</strong> ${getPlanName(result.plan_type)}</p>
+                            <p><strong>有效期至:</strong> ${result.end_date ? new Date(result.end_date).toLocaleString('zh-CN') : '永久'}</p>
+                            <p><strong>用户邮箱:</strong> ${result.user_email || '未绑定'}</p>
+                        `;
+                    } else if (result.status === 'expired') {
+                        statusElement.innerHTML = '<i class="fas fa-clock status-expired"></i> 授权码已过期';
+                        statusElement.className = 'status-expired';
+                        detailsElement.innerHTML = `
+                            <p><strong>过期时间:</strong> ${new Date(result.end_date).toLocaleString('zh-CN')}</p>
+                        `;
+                    } else {
+                        statusElement.innerHTML = '<i class="fas fa-times-circle status-invalid"></i> 授权码无效';
+                        statusElement.className = 'status-invalid';
+                        detailsElement.innerHTML = `<p>${result.message}</p>`;
+                    }
+                } else {
+                    statusElement.innerHTML = '<i class="fas fa-times-circle status-invalid"></i> 验证失败';
+                    statusElement.className = 'status-invalid';
+                    detailsElement.innerHTML = `<p>${result.detail}</p>`;
+                }
+                
+                document.getElementById('verifyResult').style.display = 'block';
+            } catch (error) {
+                alert('请求失败: ' + error.message);
+            }
+        });
+
+        // 获取授权类型名称
+        function getPlanName(planType) {
+            const planNames = {
+                'trial1': '1天试用',
+                'trial3': '3天试用',
+                '30d': '30天授权',
+                '180d': '180天授权',
+                '365d': '365天授权',
+                'lifetime': '永久授权'
+            };
+            return planNames[planType] || planType;
+        }
+
+        // 加载授权码列表
+        async function loadLicenses() {
+            try {
+                // 这里需要添加一个获取所有授权码的API端点
+                // 暂时显示提示信息
+                document.getElementById('licensesTable').innerHTML = `
+                    <tr>
+                        <td colspan="6" class="text-center">
+                            <i class="fas fa-info-circle"></i> 
+                            授权码列表功能需要添加相应的API端点
+                        </td>
+                    </tr>
+                `;
+            } catch (error) {
+                console.error('加载失败:', error);
+            }
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('软件秘钥授权系统 Web UI 已加载');
+        });
+    </script>
+</body>
+</html>
+
